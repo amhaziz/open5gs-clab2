@@ -1,0 +1,36 @@
+db_uri: mongodb://mongo/open5gs
+
+logger:
+    file: /opt/open5gs/var/log/open5gs/pcf.log
+
+sbi:
+    server:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/pcf.key
+      cert: /opt/open5gs/etc/open5gs/tls/pcf.crt
+    client:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/pcf.key
+      cert: /opt/open5gs/etc/open5gs/tls/pcf.crt
+
+pcf:
+    sbi:
+      - dev: eth0
+        port: 7777
+
+scp:
+    sbi:
+      - name: scp
+        port: 7777
+
+nrf:
+    sbi:
+      - name: nrf
+        port: 7777
+
+parameter:
+max:
+uration: 3000
+time:

@@ -1,0 +1,30 @@
+
+logger:
+    file: /opt/open5gs/var/log/open5gs/nrf.log
+
+sbi:
+    server:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/nrf.key
+      cert: /opt/open5gs/etc/open5gs/tls/nrf.crt
+    client:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/nrf.key
+      cert: /opt/open5gs/etc/open5gs/tls/nrf.crt
+
+nrf:
+  sbi:
+    - dev: eth0
+      port: 7777      
+
+scp:
+    sbi:
+      - name: scp
+        port: 7777
+
+parameter:
+max:
+time:
+pool:

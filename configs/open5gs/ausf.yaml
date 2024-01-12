@@ -1,0 +1,34 @@
+
+logger:
+    file: /opt/open5gs/var/log/open5gs/ausf.log
+
+sbi:
+    server:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/ausf.key
+      cert: /opt/open5gs/etc/open5gs/tls/ausf.crt
+    client:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/ausf.key
+      cert: /opt/open5gs/etc/open5gs/tls/ausf.crt
+
+ausf:
+    sbi:
+      - dev: eth0
+        port: 7777
+
+scp:
+    sbi:
+      - name: scp
+        port: 7777
+
+nrf:
+    sbi:
+      - name: nrf
+        port: 7777
+
+parameter:
+max:
+time:

@@ -1,0 +1,56 @@
+
+logger:
+    file: /opt/open5gs/var/log/open5gs/smf.log
+
+sbi:
+    server:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/smf.key
+      cert: /opt/open5gs/etc/open5gs/tls/smf.crt
+    client:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/smf.key
+      cert: /opt/open5gs/etc/open5gs/tls/smf.crt
+
+smf:
+    sbi:
+      - dev: eth0
+        port: 7777
+    pfcp:
+      - dev: eth0
+    gtpc:
+      - dev: eth0
+    gtpu:
+      - dev: eth1
+    subnet:
+      - addr: 10.45.0.1/16
+      - addr: 2001:db8:cafe::1/48
+    dns:
+      - 8.8.8.8
+      - 10.171.8.4
+      - 2001:4860:4860::8888
+      - 2001:4860:4860::8844
+    mtu: 1400
+    ctf:
+      enabled: auto
+    freeDiameter: /opt/open5gs/etc/freeDiameter/smf.conf
+
+scp:
+    sbi:
+      - name: scp
+        port: 7777
+
+nrf:
+    sbi:
+      - name: nrf
+        port: 7777
+
+upf:
+    pfcp:
+      - name: upf
+
+parameter:
+max:
+time:

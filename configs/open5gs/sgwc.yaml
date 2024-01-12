@@ -1,0 +1,17 @@
+
+logger:
+    file: /opt/open5gs/var/log/open5gs/sgwc.log
+
+sgwc:
+    gtpc:
+      - dev: eth0
+    pfcp:
+      - dev: eth0
+
+sgwu:
+    pfcp:
+      - name: sgwu
+
+parameter:
+max:
+time:

@@ -1,0 +1,219 @@
+name: open5gs2
+prefix: __lab-name
+
+mgmt:
+  network: br-open5gs2
+  ipv4-subnet: 172.29.0.0/24
+
+topology:
+  kinds:
+    linux:
+      image: openverso/open5gs:2.6.6
+      entrypoint: /bin/bash
+      binds:
+        - ./configs/open5gs/mme.yaml:/opt/open5gs/etc/open5gs/mme.yaml
+        - ./configs/open5gs/sgwc.yaml:/opt/open5gs/etc/open5gs/sgwc.yaml
+        - ./configs/open5gs/smf.yaml:/opt/open5gs/etc/open5gs/smf.yaml
+        - ./configs/open5gs/amf.yaml:/opt/open5gs/etc/open5gs/amf.yaml
+        - ./configs/open5gs/sgwu.yaml:/opt/open5gs/etc/open5gs/sgwu.yaml
+        - ./configs/open5gs/upf.yaml:/opt/open5gs/etc/open5gs/upf.yaml
+        - ./configs/open5gs/hss.yaml:/opt/open5gs/etc/open5gs/hss.yaml
+        - ./configs/open5gs/pcrf.yaml:/opt/open5gs/etc/open5gs/pcrf.yaml
+        - ./configs/open5gs/nrf.yaml:/opt/open5gs/etc/open5gs/nrf.yaml
+        - ./configs/open5gs/scp.yaml:/opt/open5gs/etc/open5gs/scp.yaml
+        - ./configs/open5gs/ausf.yaml:/opt/open5gs/etc/open5gs/ausf.yaml
+        - ./configs/open5gs/udm.yaml:/opt/open5gs/etc/open5gs/udm.yaml
+        - ./configs/open5gs/pcf.yaml:/opt/open5gs/etc/open5gs/pcf.yaml
+        - ./configs/open5gs/nssf.yaml:/opt/open5gs/etc/open5gs/nssf.yaml
+        - ./configs/open5gs/nssf.yaml:/opt/open5gs/etc/open5gs/nssf.yaml
+        - ./configs/open5gs/bsf.yaml:/opt/open5gs/etc/open5gs/bsf.yaml
+        - ./configs/open5gs/udr.yaml:/opt/open5gs/etc/open5gs/udr.yaml
+        - ./configs/freeDiameter/:/opt/open5gs/etc/freeDiameter/
+        - ./logs/:/opt/open5gs/var/log/open5gs/
+      env-files:
+        - ./configs/env-files/open5gs-env
+
+  nodes:
+  ## the only required bridge is br-gtpu
+    br-gtpu2: # 172.26.30.0/24
+      kind: bridge
+
+    # HSS and UDR MongoDB subscriber database backend
+    mongo:
+      kind: linux
+      mgmt-ipv4: 172.29.0.100
+      image: mongo:5.0
+      publish: 
+        - tcp/27017
+      entrypoint: docker-entrypoint.sh
+      cmd: mongod
+      env:
+        MONGO_INITDB_DATABASE: open5gs
+
+    # Open5GS WebUI: interactively edit subscriber data
+    webui-1:
+      kind: linux
+      mgmt-ipv4: 172.29.0.30
+      image: openverso/open5gs-webui:2.6.6
+      entrypoint: node server/index.js 
+      env:
+        DB_URI: mongodb://mongo/open5gs
+        NODE_ENV: development
+      ports:
+        - 3000:3000
+      wait-for:
+        - mongo        
+
+    # Open5gs dbctl: Edit subscribers in MongoDB via cli
+    dbctl:
+      kind: linux
+      image: openverso/open5gs-dbctl:0.9.1
+      mgmt-ipv4: 172.29.0.31
+      entrypoint: /bin/bash
+
+########################### Open5GS nodes ##################################
+
+    #MME - Mobility Management Entity
+    mme:
+      kind: linux
+      mgmt-ipv4: 172.29.0.2
+
+    #SGWC - Serving Gateway Control Plane
+    sgwc:
+      kind: linux
+      mgmt-ipv4: 172.29.0.3
+
+    #PGWC/SMF - Packet Gateway Control Plane / (component contained in Open5GS SMF)
+    smf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.4   
+      exec:      
+        - ip addr add 172.26.30.4/24 dev eth2 #SMF-gtpu
+
+    #PGWC/SMF - Packet Gateway Control Plane / (component contained in Open5GS SMF)
+    amf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.5
+
+    #SGWU - Serving Gateway User Plane
+    sgwu:
+      kind: linux
+      mgmt-ipv4: 172.29.0.6
+      exec:
+        - ip addr add 172.26.30.6/24 dev eth1 #SGWU-gtpu
+
+    #PGWU/UPF - Packet Gateway User Plane / (component contained in Open5GS UPF)
+    upf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.7
+      binds:
+        - ./configs/tun_create.sh:/tun_create.sh
+      exec:
+        - ip addr add 172.26.30.7/24 dev eth1 #UPF-gtpu
+        - /bin/bash /tun_create.sh
+
+    #HSS - Home Subscriber Server
+    hss:
+      kind: linux
+      mgmt-ipv4: 172.29.0.8
+
+    #PCRF - Policy and Charging Rules Function
+    pcrf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.9
+
+    # NRF - NF Repository Function
+    nrf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.10
+
+    # SCP - Service Communication Proxy
+    scp:
+      kind: linux
+      mgmt-ipv4: 172.29.0.200
+
+    # AUSF - Authentication Server Function
+    ausf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.11
+
+    # UDM - Unified Data Management
+    udm:
+      kind: linux
+      mgmt-ipv4: 172.29.0.12
+
+    # PCF - Policy and Charging Function
+    pcf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.13
+
+    # NSSF - Network Slice Selection Function
+    nssf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.14
+
+    # BSF - Binding Support Function
+    bsf:
+      kind: linux
+      mgmt-ipv4: 172.29.0.15
+
+    # UDR - Unified Data Repository
+    udr:
+      kind: linux
+      mgmt-ipv4: 172.29.0.20
+
+
+################# SRSRAN 4G ENB/UE #################
+
+    enodeb:
+      kind: linux
+      image: openverso/srsran-4g:23_11
+      mgmt-ipv4: 172.29.0.32
+      entrypoint: /bin/bash
+      exec:
+        - ip addr add 172.26.30.32/24 dev eth2 #ENB-gtpu
+        - bash -c "envsubst < /etc/srsran/enb.conf > enb.conf"
+        - bash -c "envsubst < /etc/srsran/rr.conf > rr.conf"
+      env-files:
+        - ./configs/env-files/srsran4g-env
+
+    ue1:
+      kind: linux
+      image: openverso/srsran-4g:23_11
+      mgmt-ipv4: 172.29.0.33
+      entrypoint: /bin/bash
+      exec:
+        - bash -c "envsubst < /etc/srsran/ue.conf > ue.conf"
+      env-files:
+        - ./configs/env-files/srsran4g-env
+
+################# UERANSIM 5G GNB/UE #################
+
+    gnb:
+      kind: linux
+      image: openverso/ueransim:3.2.6
+      mgmt-ipv4: 172.29.0.34
+      entrypoint: /bin/bash
+      exec:
+        - ip addr add 172.26.30.34/24 dev eth2 #GNB gtpu N3-UPF
+        - bash -c "envsubst < /etc/ueransim/gnb.yaml > gnb.yaml"
+      env-files:
+        - ./configs/env-files/ueransim-env
+
+    ue2:
+      kind: linux
+      image: openverso/ueransim:3.2.6
+      mgmt-ipv4: 172.29.0.35
+      entrypoint: /bin/bash
+      exec:
+        - bash -c "envsubst < /etc/ueransim/ue.yaml > ue.yaml"
+      env-files:
+        - ./configs/env-files/ueransim-env
+
+  links:
+    # br-gtpu links
+    - endpoints: ["br-gtpu2:eth6", "smf:eth2"]
+    - endpoints: ["br-gtpu2:eth7", "sgwu:eth1"]
+    - endpoints: ["br-gtpu2:eth8", "upf:eth1"]
+    - endpoints: ["br-gtpu2:eth9", "enodeb:eth2"]
+    - endpoints: ["br-gtpu2:eth10", "gnb:eth2"]

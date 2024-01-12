@@ -1,0 +1,39 @@
+
+logger:
+    file: /opt/open5gs/var/log/open5gs/nssf.log
+
+sbi:
+    server:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/nssf.key
+      cert: /opt/open5gs/etc/open5gs/tls/nssf.crt
+    client:
+      no_tls: true
+      cacert: /opt/open5gs/etc/open5gs/tls/ca.crt
+      key: /opt/open5gs/etc/open5gs/tls/nssf.key
+      cert: /opt/open5gs/etc/open5gs/tls/nssf.crt
+
+nssf:
+    sbi:
+      - dev: eth0
+        port: 7777
+    nsi:
+      - dev: eth0
+        port: 7777
+        s_nssai:
+          sst: 1
+
+scp:
+    sbi:
+      - name: scp
+        port: 7777
+
+nrf:
+    sbi:
+      - name: nrf
+        port: 7777
+
+parameter:
+max:
+time:

@@ -1,0 +1,22 @@
+
+logger:
+    file: /opt/open5gs/var/log/open5gs/upf.log
+
+upf:
+    pfcp:
+      - dev: eth0
+    gtpu:
+      - dev: eth1
+    subnet:
+      - addr: 10.45.0.1/16
+        dnn: internet
+      - addr: 2001:db8:cafe::1/48
+        dnn: internet
+
+smf:
+    pfcp:
+      - name: smf
+
+parameter:
+max:
+time:
