@@ -1,4 +1,4 @@
-# Open5GS: 4G and 5G LAB deployment using Containerlab
+# Open5GS: 4G and 5G LAB deployment using Containerlab (Case: Single bridge)
 
 This lab represents a 4G and a 5G Setup built using the following tools:
 
